@@ -20,13 +20,13 @@ const metadataBase = new URL(
 export const metadata: Metadata = {
   metadataBase,
   title: "Baddie Janta Party",
-  description: "A national movement for glow ups, clarity, confidence, and slay policies only.",
+  description: "Vote Hot. Slay Policies Only.",
   openGraph: {
     title: "Baddie Janta Party",
-    description: "Power to the people. Vote hot. Slay policies only.",
+    description: "Vote Hot. Slay Policies Only.",
     images: [
       {
-        url: "/opengraph-image",
+        url: "/og-bjp-v2.png",
         width: 1200,
         height: 630,
         alt: "Baddie Janta Party campaign poster",
@@ -36,8 +36,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Baddie Janta Party",
-    description: "Power to the people. Vote hot. Slay policies only.",
-    images: ["/opengraph-image"],
+    description: "Vote Hot. Slay Policies Only.",
+    images: ["/og-bjp-v2.png"],
   },
 };
 
