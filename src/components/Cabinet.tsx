@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
 
 const MINISTRIES = [
@@ -55,7 +55,7 @@ const MINISTRIES = [
   { role: "Min. of Buying Things I Don't Need", dept: "Retail Therapy" },
   { role: "Chief Red Flag Decorator", dept: "Rose Colored Glasses" },
   { role: "Minister of Being So Real", dept: "Unfiltered Opinions" },
-  { role: "Sec. of Pookie & Ray of Sunshine", dept: "Endearment Verification" }
+  { role: "Sec. of Pookie & Ray of Sunshine", dept: "Endearment Verification" },
 ];
 
 interface CabinetMember {
@@ -64,7 +64,6 @@ interface CabinetMember {
   role: string;
   dept: string;
   timestamp: number;
-  avatarUrl: string;
 }
 
 export function Cabinet() {
@@ -73,6 +72,11 @@ export function Cabinet() {
   const [members, setMembers] = useState<CabinetMember[]>([]);
   const [isReady, setIsReady] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+
+  const selectedMinistry = useMemo(
+    () => MINISTRIES.find((m) => m.role === selectedRole) || MINISTRIES[0],
+    [selectedRole],
+  );
 
   useEffect(() => {
     const frame = requestAnimationFrame(() => {
@@ -98,27 +102,21 @@ export function Cabinet() {
     }
   }, [members, isReady]);
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!name.trim() || isGenerating) return;
 
     setIsGenerating(true);
-    
-    // Generate a reliable, clean initials-based avatar using ui-avatars
-    const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name.trim())}&background=fff1f8&color=FF007A&bold=true&size=128`;
 
-    const ministry = MINISTRIES.find((m) => m.role === selectedRole) || MINISTRIES[0];
     const newMember: CabinetMember = {
-      id: `BJP ${Math.floor(Math.random() * 900) + 100}`,
+      id: `BJP-${Math.floor(Math.random() * 9000) + 1000}`,
       name: name.trim(),
-      role: ministry.role,
-      dept: ministry.dept,
+      role: selectedMinistry.role,
+      dept: selectedMinistry.dept,
       timestamp: Date.now(),
-      avatarUrl
     };
 
-    const updated = [newMember, ...members].slice(0, 12);
-    setMembers(updated);
+    setMembers((current) => [newMember, ...current].slice(0, 12));
     setName("");
     setIsGenerating(false);
   };
@@ -128,8 +126,6 @@ export function Cabinet() {
   return (
     <section id="cabinet" className="w-full bg-white py-24 px-0 border-t border-brand-pink-border flex flex-col items-center overflow-hidden">
       <div className="max-w-7xl w-full mx-auto px-6 lg:px-12">
-        
-        {/* Header */}
         <div className="text-center mb-10 md:mb-16 max-w-2xl mx-auto">
           <h2 className="font-sans text-4xl sm:text-5xl font-black text-brand-black uppercase tracking-tighter">
             Join the Cabinet
@@ -139,7 +135,6 @@ export function Cabinet() {
           </p>
         </div>
 
-        {/* Input Form */}
         <form onSubmit={handleSubmit} className="max-w-xl mx-auto bg-brand-pink-soft border border-brand-pink-border rounded-2xl p-6 sm:p-8 mb-20 w-full shadow-sm">
           <div className="space-y-6">
             <div className="space-y-2">
@@ -157,7 +152,7 @@ export function Cabinet() {
                 className="w-full bg-white border border-brand-pink-border px-6 py-4 font-sans font-bold text-sm tracking-wide text-brand-black placeholder:text-zinc-400 focus:outline-none focus:border-brand-pink focus:ring-1 focus:ring-brand-pink rounded-xl transition-all"
               />
             </div>
-            
+
             <div className="space-y-2">
               <label htmlFor="cabRole" className="font-sans text-xs font-bold text-brand-black uppercase tracking-widest block">
                 Select Ministry (50+ Available)
@@ -175,13 +170,13 @@ export function Cabinet() {
                 </select>
                 <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-brand-black">
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
               </div>
             </div>
 
-            <motion.button 
+            <motion.button
               whileHover={{ scale: isGenerating ? 1 : 1.02 }}
               type="submit"
               disabled={isGenerating}
@@ -195,7 +190,6 @@ export function Cabinet() {
           </div>
         </form>
 
-        {/* Latest Appointments List */}
         {members.length > 0 && (
           <div>
             <div className="mb-8 text-center lg:text-left">
@@ -203,11 +197,10 @@ export function Cabinet() {
                 Recent Appointments on This Device
               </h3>
               <p className="font-sans text-brand-pink text-xs font-bold uppercase tracking-widest mt-1">
-                New seats are being claimed every minute.
+                Your latest claimed seats are saved on this device.
               </p>
             </div>
-            
-            {/* Horizontal scroll on mobile, Grid on desktop */}
+
             <div className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-8 -mx-6 px-6 lg:mx-0 lg:px-0 lg:grid lg:grid-cols-3 gap-6">
               {members.map((member) => (
                 <motion.div
@@ -217,23 +210,12 @@ export function Cabinet() {
                   className="snap-center shrink-0 w-[300px] lg:w-auto bg-white border border-brand-pink-border rounded-2xl p-6 flex flex-col justify-between hover:shadow-[0_10px_30px_-10px_rgba(255,0,122,0.15)] transition-all group text-left relative overflow-hidden"
                 >
                   <div className="absolute -right-4 -top-4 w-16 h-16 bg-brand-pink/10 rounded-full blur-xl group-hover:bg-brand-pink/20 transition-colors pointer-events-none" />
-                  
+
                   <div>
                     <div className="flex items-center gap-4 mb-4">
-                      {member.avatarUrl ? (
-                        <div className="relative w-14 h-14 rounded-full border-2 border-brand-pink-border overflow-hidden bg-brand-pink-soft shrink-0">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img 
-                            src={member.avatarUrl} 
-                            alt={member.name} 
-                            className="w-full h-full object-cover" 
-                          />
-                        </div>
-                      ) : (
-                        <div className="w-14 h-14 rounded-full bg-brand-pink-soft border border-brand-pink-border flex flex-col items-center justify-center shrink-0">
-                          <span className="font-black text-brand-pink text-xl">{member.name.charAt(0).toUpperCase()}</span>
-                        </div>
-                      )}
+                      <div className="w-14 h-14 rounded-full bg-brand-pink-soft border border-brand-pink-border flex flex-col items-center justify-center shrink-0">
+                        <span className="font-black text-brand-pink text-xl">{member.name.charAt(0).toUpperCase()}</span>
+                      </div>
                       <div>
                         <h4 className="font-sans text-xl font-black text-brand-black tracking-tighter leading-tight relative z-10 break-words">
                           {member.name}
@@ -241,26 +223,24 @@ export function Cabinet() {
                         <span className="font-mono text-[10px] font-bold text-zinc-400">ID: {member.id}</span>
                       </div>
                     </div>
-                    
+
                     <p className="font-sans text-brand-pink text-[11px] font-bold uppercase tracking-widest mb-4 line-clamp-1">
                       {member.role}
                     </p>
-                    
+
                     <p className="font-sans text-sm text-brand-muted font-medium mb-6 leading-snug h-10 line-clamp-2">
-                      <span className="text-zinc-900 block font-bold text-[10px] uppercase tracking-widest mb-1">Department:</span> 
+                      <span className="text-zinc-900 block font-bold text-[10px] uppercase tracking-widest mb-1">Department:</span>
                       {member.dept}
                     </p>
                   </div>
 
                   <div className="pt-4 border-t border-brand-pink-border flex justify-between items-end">
-                    <div>
-                      <div className="inline-flex items-center gap-1.5 bg-brand-pink-soft px-2 py-1 rounded text-brand-pink mb-1 border border-brand-pink-border/50">
-                        <div className="w-1.5 h-1.5 rounded-full bg-brand-pink animate-pulse" />
-                        <span className="font-sans text-[8px] font-black uppercase tracking-widest">Recently Appointed</span>
-                      </div>
+                    <div className="inline-flex items-center gap-1.5 bg-brand-pink-soft px-2 py-1 rounded text-brand-pink mb-1 border border-brand-pink-border/50">
+                      <div className="w-1.5 h-1.5 rounded-full bg-brand-pink animate-pulse" />
+                      <span className="font-sans text-[8px] font-black uppercase tracking-widest">Recently Appointed</span>
                     </div>
                   </div>
-                  
+
                   <div className="absolute top-6 right-6 w-5 h-5 bg-brand-pink text-white rounded-full flex items-center justify-center font-serif text-[10px] font-bold shadow-md shadow-brand-pink/30">
                     B
                   </div>

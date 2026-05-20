@@ -21,6 +21,24 @@ export const metadata: Metadata = {
   metadataBase,
   title: "Baddie Janta Party",
   description: "A national movement for glow ups, clarity, confidence, and slay policies only.",
+  openGraph: {
+    title: "Baddie Janta Party",
+    description: "Power to the people. Vote hot. Slay policies only.",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "Baddie Janta Party campaign poster",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Baddie Janta Party",
+    description: "Power to the people. Vote hot. Slay policies only.",
+    images: ["/opengraph-image"],
+  },
 };
 
 export default function RootLayout({
